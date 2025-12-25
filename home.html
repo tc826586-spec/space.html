@@ -2,78 +2,177 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Space Bar Tap Counter</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spacebar Tap Count Game</title>
 
 <style>
 body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  font-family: Arial, sans-serif;
-  color: white;
-  user-select: none;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-.container {
-  text-align: center;
-  padding: 30px;
-  background: rgba(0,0,0,0.4);
-  border-radius: 20px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+.game-box {
+    background: rgba(0,0,0,0.4);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
 }
 
-.count {
-  font-size: 80px;
-  margin: 20px 0;
+h1 {
+    margin-bottom: 10px;
 }
 
-button {
-  padding: 12px 25px;
-  font-size: 18px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #00ffcc;
-  color: black;
+.score {
+    font-size: 22px;
+    margin: 10px 0;
+}
+
+.timer {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.tap-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    background: #00c6ff;
+    color: #000;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.tap-btn:active {
+    transform: scale(0.97);
+}
+
+.start-btn, .reset-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.start-btn {
+    background: #00ff99;
+}
+
+.reset-btn {
+    background: #ff7675;
+}
+
+.best {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.note {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>🚀 Space Bar Tap Counter</h1>
-  <div class="count" id="count">0</div>
-  <p>Press <b>SPACE BAR</b></p>
-  <button onclick="resetCount()">Reset</button>
+<div class="game-box">
+    <h1>Spacebar Tap Game</h1>
+
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="timer">Time Left: <span id="time">10</span>s</div>
+
+    <button class="tap-btn" onclick="tap()">TAP / SPACE</button>
+
+    <div>
+        <button class="start-btn" onclick="startGame()">Start</button>
+        <button class="reset-btn" onclick="resetGame()">Reset</button>
+    </div>
+
+    <div class="best">Best Score: <span id="best">0</span></div>
+
+    <div class="note">Press SPACEBAR or tap button</div>
 </div>
 
 <script>
-let count = 0;
-let pressed = false;
+let score = 0;
+let time = 10;
+let timer = null;
+let gameRunning = false;
 
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && !pressed) {
-    count++;
-    document.getElementById("count").textContent = count;
-    pressed = true;
-  }
-});
+const scoreEl = document.getElementById("score");
+const timeEl = document.getElementById("time");
+const bestEl = document.getElementById("best");
 
-document.addEventListener("keyup", (e) => {
-  if (e.code === "Space") {
-    pressed = false;
-  }
-});
+let bestScore = localStorage.getItem("bestTapScore") || 0;
+bestEl.textContent = bestScore;
 
-function resetCount() {
-  count = 0;
-  document.getElementById("count").textContent = count;
+function startGame() {
+    if (gameRunning) return;
+
+    score = 0;
+    time = 10;
+    scoreEl.textContent = score;
+    timeEl.textContent = time;
+    gameRunning = true;
+
+    timer = setInterval(() => {
+        time--;
+        timeEl.textContent = time;
+
+        if (time <= 0) {
+            endGame();
+        }
+    }, 1000);
 }
+
+function tap() {
+    if (!gameRunning) return;
+    score++;
+    scoreEl.textContent = score;
+}
+
+function endGame() {
+    clearInterval(timer);
+    gameRunning = false;
+
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("bestTapScore", bestScore);
+        bestEl.textContent = bestScore;
+    }
+
+    alert("Time's up! Your score: " + score);
+}
+
+function resetGame() {
+    clearInterval(timer);
+    gameRunning = false;
+    score = 0;
+    time = 10;
+    scoreEl.textContent = score;
+    timeEl.textContent = time;
+}
+
+// Spacebar detection
+document.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+        e.preventDefault();
+        tap();
+    }
+});
 </script>
 
 </body>
