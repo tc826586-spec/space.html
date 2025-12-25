@@ -1,12 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Gaming Hub</title>
-  <meta http-equiv="refresh" content="0; url=space.html">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Space Bar Tap Counter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  font-family: Arial, sans-serif;
+  color: white;
+  user-select: none;
+}
+
+.container {
+  text-align: center;
+  padding: 30px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+.count {
+  font-size: 80px;
+  margin: 20px 0;
+}
+
+button {
+  padding: 12px 25px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #00ffcc;
+  color: black;
+}
+</style>
 </head>
+
 <body>
-  <h2 style="text-align:center;">Loading Game...</h2>
+
+<div class="container">
+  <h1>🚀 Space Bar Tap Counter</h1>
+  <div class="count" id="count">0</div>
+  <p>Press <b>SPACE BAR</b></p>
+  <button onclick="resetCount()">Reset</button>
+</div>
+
+<script>
+let count = 0;
+let pressed = false;
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !pressed) {
+    count++;
+    document.getElementById("count").textContent = count;
+    pressed = true;
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  if (e.code === "Space") {
+    pressed = false;
+  }
+});
+
+function resetCount() {
+  count = 0;
+  document.getElementById("count").textContent = count;
+}
+</script>
+
 </body>
 </html>
